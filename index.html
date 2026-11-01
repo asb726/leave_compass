@@ -70,13 +70,30 @@ header .top{align-items:center}
 .privacy{color:#D1DFEF}
 @media(max-width:700px){.brand small{font-size:10.5px;line-height:1.35;max-width:380px}.brand{gap:9px}.header-actions{flex-shrink:0}}
 @media(max-width:450px){header .top{gap:7px;padding:14px 12px}.header-btn{padding:7px 9px;font-size:11px}.brand strong{font-size:15px}.brand .mark{width:32px;height:32px;font-size:18px}.brand small{font-size:10px}.brand{gap:7px}}
+
+/* v4.3 - trustworthy persistence status and recovery controls */
+.storage-health{margin:14px 0 18px;border-top:3px solid #D26A22}
+.storage-health-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.storage-badge{display:inline-flex;align-items:center;font-size:11px;font-weight:800;border-radius:20px;padding:6px 11px;white-space:nowrap}
+.storage-badge.check{background:#E9F0F9;color:#315E8C}
+.storage-badge.good{background:#E8F1FD;color:#205B97}
+.storage-badge.warn{background:#FFF0DF;color:#9B4B16}
+.storage-badge.bad{background:#FFF0EF;color:#A52F3D}
+.storage-status-text{margin:14px 0;color:#38556A;font-size:13px}
+.storage-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.storage-facts>div{background:#F4F7FB;border-radius:10px;padding:11px 13px;min-width:0}
+.storage-facts span{display:block;color:#6A7F91;font-size:11px;font-weight:700;margin-bottom:5px}
+.storage-facts strong{display:block;font-size:12px;overflow-wrap:anywhere}
+.privacy{max-width:245px;line-height:1.2}
+@media(max-width:700px){.storage-facts{grid-template-columns:1fr}.storage-health-top{flex-direction:column}.storage-health{padding:18px}}
+@media(max-width:500px){.privacy{font-size:10px;max-width:150px}.storage-health .buttons button{flex:1 1 100%}}
 </style>
 </head>
 <body>
 <header>
   <div class="top">
     <div class="brand"><div class="mark" aria-hidden="true">◉</div><div><strong>The AG Leave Compass</strong><small>ATC Leave Tracker - don't let Uncle Sam take what's yours</small></div></div>
-    <div class="header-actions"><span class="privacy">◈ Private · Stored in your browser</span><button class="header-btn" id="backupHeader" type="button">↓ Backup data</button></div>
+    <div class="header-actions"><span class="privacy" id="storageHeader" aria-live="polite">◈ Checking local save…</span><button class="header-btn" id="backupHeader" type="button">↓ Backup data</button></div>
   </div>
   <div class="nav" role="tablist" aria-label="Main views"><button type="button" role="tab" data-page="overview" class="active" aria-selected="true">Overview</button><button type="button" role="tab" data-page="activity" aria-selected="false">Leave activity</button><button type="button" role="tab" data-page="calendar" aria-selected="false">Calendar &amp; shifts</button><button type="button" role="tab" data-page="planner" aria-selected="false">Leave planner</button><button type="button" role="tab" data-page="settings" aria-selected="false">Settings &amp; backup</button></div>
 </header>
@@ -161,7 +178,7 @@ header .top{align-items:center}
 <section class="page" id="page-planner" role="tabpanel"><div class="content-head"><div><div class="eyebrow">ATC leave planning</div><h1>Use-or-lose shift planner</h1><p>Find specific shifts to request off, with preference for longer uninterrupted breaks beside your scheduled RDOs. Suggestions are proposals only.</p></div><div class="buttons"><button id="plannerRefresh" type="button" class="secondary">↻ Recalculate</button><button id="plannerCalendar" type="button" class="primary">Choose shifts on calendar</button></div></div>
 <div class="planner-stats"><div class="panel"><span>Additional annual leave to use</span><strong id="plannerTarget">—</strong><small>After existing plans</small></div><div class="panel"><span>Available future shifts</span><strong id="plannerAvailable">0 shifts</strong><small>Based on your entered schedule</small></div></div><div class="panel"><h3>Suggested shift-by-shift plan</h3><p class="sub" id="plannerStatus">Enter your schedule to calculate options.</p><div id="planResults"></div></div><div class="panel"><h3>How recommendations are built</h3><div class="help"><p>1. Start with your current projected use-or-lose after already scheduled annual leave.</p><p>2. Find work shifts still available before the leave-year ends, using your recurring cycle and date overrides.</p><p>3. Prefer shifts beside known RDOs and existing leave, creating longer continuous time away from work.</p><p>4. Select full remaining shifts until the annual leave target is covered. Review dates and request leave through the FAA's normal process.</p></div><p class="hint-block">Holiday treatment is never assumed from the standard federal calendar. Enter your confirmed in-lieu holiday hours for any applicable shift. Overtime entries are excluded from annual-leave chargeable hours and stop an OT day from being treated as a full day off for break optimization. Staffing, leave bidding and approval are not evaluated.</p></div></section>
 <section id="page-settings" class="page" role="tabpanel">
-  <div class="content-head"><div><h1>Settings &amp; backup</h1><p>Match the dates, accrual rates and starting balances to your agency's leave records. Leave values use HH.MM: 249.15 means 249 hours and 15 minutes, not 249.15 decimal hours.</p></div><div class="save-indicator" id="savedLabel">Saved on this device</div></div>
+  <div class="content-head"><div><h1>Settings &amp; backup</h1><p>Match the dates, accrual rates and starting balances to your agency's leave records. Leave values use HH.MM: 249.15 means 249 hours and 15 minutes, not 249.15 decimal hours.</p></div><div class="save-indicator" id="savedLabel" role="status">Checking local save…</div></div>
   <div class="panel importer"><div class="hrow"><div><h3>Import your latest FAA Earnings &amp; Leave Statement (LES)</h3><p class="sub">Text-based DOT PDF statements. A value such as 249.15 is read as 249 hours and 15 minutes. Your PDF is read on this device; only leave numbers and the pay period date are kept.</p></div><span class="chip">Local PDF reading</span></div><div class="buttons"><label for="lesFile" class="primary upload-label">↑ Choose LES PDF</label><input id="lesFile" class="visually-hidden" type="file" accept="application/pdf,.pdf"><span class="side-note">Works offline for text-based PDFs like PP22. Scanned/image-only PDFs require manual entry.</span></div><div id="lesFeedback" class="import-status" aria-live="polite">Select a PDF to preview extracted values before applying them.</div><div id="lesPreview" class="hidden"><div id="lesFields" class="import-grid"></div><div class="buttons"><button type="button" id="lesApply" class="primary">Use these LES balances</button><button type="button" id="lesCancel" class="secondary">Cancel</button></div><p class="hint-block">Importing updates your balance snapshot, date, and accrual rates; it keeps your leave history and shifts. Entries on or before the new snapshot date are excluded from forecast totals to prevent double counting.</p></div></div>
   <div class="panel"><div class="hrow"><h3>LES reconciliation history</h3><span class="chip">Last 24 imports</span></div><p class="sub">When a newer LES is imported, compare the expected balance (from prior LES, accruals and recorded taken leave) with the actual new LES. A variance indicates an item to review, not necessarily a payroll error.</p><div id="reconciliationLog"></div></div>
 <form id="settingsForm"><div class="grid2">
@@ -186,7 +203,14 @@ header .top{align-items:center}
 <div class="panel"><h3>5. Review &amp; save</h3><p class="sub">Your snapshot is the starting point for projections.</p><div class="help"><p><b>Pay periods:</b> This tracker assumes accruals are credited at the end of 14-day periods anchored to the leave-year end date.</p><p><b>Six-hour accrual:</b> Credits 10 hours (rather than 6) in the last pay period of the leave year.</p><p><b>Special rules:</b> Leave transfers, restored leave, changes in your accrual rate, uncommon tours, or a personal leave ceiling may require a custom setting or balance adjustment.</p></div><div id="settingsError" class="form-errors" role="alert"></div><div class="buttons"><button type="submit" class="primary">Save settings &amp; calculate</button><button type="button" id="resetTo2026" class="secondary">Restore 2026 dates</button></div></div>
   </div></form>
   <div class="section-title"><h2>Own your data</h2><span>Your data stays on this device unless you export it</span></div>
-  <div class="grid2"><div class="panel"><h3>Backup and restore</h3><p class="sub">Export a plain JSON backup of your settings and entries. Store it securely if your leave notes are sensitive.</p><div class="buttons"><button class="primary" id="exportJson" type="button">↓ Export backup (.json)</button><button class="secondary" id="importJson" type="button">↑ Import backup</button><input class="hidden" id="jsonFile" type="file" accept=".json,application/json"></div><p class="hint-block">Browser storage can be cleared when you remove site data or switch devices. Make occasional backups.</p></div><div class="panel"><h3>Data management</h3><p class="sub">Reset leave entries or wipe the tool entirely.</p><div class="buttons"><button class="secondary" type="button" id="clearEntries">Clear leave entries</button><button class="danger-button" type="button" id="clearAll">Delete all saved data</button></div><p class="hint-block">These actions cannot be undone unless you've saved a backup.</p></div></div>
+  <div class="panel storage-health" aria-labelledby="localSaveHeading">
+    <div class="storage-health-top"><div><h3 id="localSaveHeading">Automatic save &amp; recovery</h3><p class="sub">Changes are saved automatically after you click a Save or Apply button. This website does not have a cloud account or server-side data sync.</p></div><span id="storageBadge" class="storage-badge check">Checking…</span></div>
+    <p id="storageStatusText" class="storage-status-text" role="status" aria-live="polite">Checking whether browser storage is available…</p>
+    <div class="storage-facts"><div><span>Website data location</span><strong id="storageOrigin">—</strong></div><div><span>Last successful save</span><strong id="storageLastSaved">—</strong></div><div><span>Local copies</span><strong id="storageMethods">—</strong></div></div>
+    <div class="buttons"><button type="button" class="secondary" id="checkStorage">↻ Check saved data</button><button type="button" class="secondary" id="keepStorage">Ask browser to keep data</button><button type="button" class="secondary" id="storageBackup">↓ Download a JSON backup</button></div>
+    <p class="hint-block">For automatic reopening, always use the <b>same GitHub Pages site in the same regular browser profile</b>. Changing from a downloaded HTML file to GitHub Pages, using a private window, switching browsers/devices, or clearing website data can result in a separate or empty save. Safari may clear script-created storage after extended periods without interaction. Keep a JSON backup for long-term protection.</p>
+  </div>
+  <div class="grid2"><div class="panel"><h3>Backup and restore</h3><p class="sub">Export a plain JSON backup of your settings and entries. Store it securely if your leave notes are sensitive.</p><div class="buttons"><button class="primary" id="exportJson" type="button">↓ Export backup (.json)</button><button class="secondary" id="importJson" type="button">↑ Import backup</button><input class="hidden" id="jsonFile" type="file" accept=".json,application/json"></div><p class="hint-block">Backups remain the safest protection against browser storage cleanup or moving to another browser. Your data is not sent to GitHub.</p></div><div class="panel"><h3>Data management</h3><p class="sub">Reset leave entries or wipe the tool entirely.</p><div class="buttons"><button class="secondary" type="button" id="clearEntries">Clear leave entries</button><button class="danger-button" type="button" id="clearAll">Delete all saved data</button></div><p class="hint-block">These actions cannot be undone unless you've saved a backup.</p></div></div>
   <div class="section-title"><h2>Official references</h2></div><div class="panel"><div class="help"><p>All leave balances and entries use the FAA LES HH.MM hours-and-minutes convention. The tool uses standard federal leave-year calendars and accrual conventions. Verify FAA-specific and individual exceptions against your own payroll and HR guidance.</p><p><a target="_blank" rel="noopener noreferrer" href="https://www.opm.gov/policy-data-oversight/pay-leave/leave-administration/fact-sheets/leave-year-beginning-and-ending-dates">OPM: Leave-year dates ↗</a></p><p><a target="_blank" rel="noopener noreferrer" href="https://www.opm.gov/policy-data-oversight/pay-leave/leave-administration/fact-sheets/annual-leave/">OPM: Annual leave accrual rates ↗</a></p><p><a target="_blank" rel="noopener noreferrer" href="https://www.opm.gov/policy-data-oversight/pay-leave/leave-administration/fact-sheets/restoration-of-annual-leave/">OPM: Restoration of annual leave ↗</a></p></div></div>
 </section>
 <div class="foot">The AG Leave Compass · An independent planning tool, not an official FAA, OPM, or payroll system · Calculations are estimates.</div>
@@ -197,6 +221,9 @@ header .top{align-items:center}
 'use strict';
 // Legacy storage key deliberately retained so updating the HTML preserves prior data.
 const KEY='leaveCompass-v1';
+const RECOVERY_KEY=KEY+'-recovery';
+const DB_NAME='AGLeaveCompassLocalData';
+const DB_STORE='savedSnapshots';
 const DATES={
 '2025':['2025-01-12','2026-01-10'], '2026':['2026-01-11','2027-01-09'],
 '2027':['2027-01-10','2028-01-08'], '2028':['2028-01-09','2029-01-06'],
@@ -251,11 +278,141 @@ const defaultWeek=()=>Array(7).fill('');
 const defaults=()=>({year:'2026',start:DATES['2026'][0],end:DATES['2026'][1],asOf:today(),annualBase:'',sickBase:'',rate:'',customRate:8,sickRate:4,ceiling:240,unitsVersion:4,creditBase:'',restoredBase:'',awardBase:'',bankExpiry:{restored:'',credit:'',award:''},holidayExempt:{},holidayNames:{},reconciliations:[],entries:[],patternMode:'none',weekly:defaultWeek(),cycleAnchor:today(),cycle:[],shiftOverrides:{},overtime:[],lesSource:null});
 let state=defaults(),pendingLES=null;
 let planningMode=false,selectedPlanDays=new Set(),proposedDays=[];
-try{const stored=JSON.parse(localStorage.getItem(KEY)||'null');if(stored&&typeof stored==='object'){upgradeShiftStrings(upgradeStored(stored));state={...defaults(),...stored,entries:Array.isArray(stored.entries)?stored.entries:[],weekly:Array.isArray(stored.weekly)&&stored.weekly.length===7?stored.weekly:defaultWeek(),cycle:Array.isArray(stored.cycle)?stored.cycle:[],shiftOverrides:stored.shiftOverrides&&typeof stored.shiftOverrides==='object'&&!Array.isArray(stored.shiftOverrides)?stored.shiftOverrides:{}}}}catch(e){console.warn('Could not load leave data',e)}
-state.bankExpiry={restored:'',credit:'',award:'',...state.bankExpiry};state.holidayExempt=state.holidayExempt&&typeof state.holidayExempt==='object'&&!Array.isArray(state.holidayExempt)?state.holidayExempt:{};state.holidayNames=state.holidayNames&&typeof state.holidayNames==='object'&&!Array.isArray(state.holidayNames)?state.holidayNames:{};state.reconciliations=Array.isArray(state.reconciliations)?state.reconciliations:[];state.overtime=normalizeOT(state.overtime);
 let viewingMonth=today().slice(0,7),selectedDay=today(),toastTimer;
+let changedSinceLoad=false,dbPromise=null,dbWriteQueue=Promise.resolve(),initialSnapshot=null;
+const storageHealth={local:false,idb:false,lastSaved:'',hasData:false,blocked:false,recovered:false,conflict:false};
+function snapshotValid(x){return !!(x&&typeof x==='object'&&!Array.isArray(x)&&Array.isArray(x.entries)&&typeof x.start==='string'&&typeof x.end==='string')}
+function stateTimestamp(x){const n=Date.parse(x?.__savedAt||'');return Number.isFinite(n)?n:0}
+function normalizeState(raw){
+ const stored=JSON.parse(JSON.stringify(raw));
+ upgradeShiftStrings(upgradeStored(stored));
+ const merged={...defaults(),...stored};
+ merged.entries=Array.isArray(stored.entries)?stored.entries:[];
+ merged.weekly=Array.isArray(stored.weekly)&&stored.weekly.length===7?stored.weekly:defaultWeek();
+ merged.cycle=Array.isArray(stored.cycle)?stored.cycle:[];
+ merged.shiftOverrides=stored.shiftOverrides&&typeof stored.shiftOverrides==='object'&&!Array.isArray(stored.shiftOverrides)?stored.shiftOverrides:{};
+ merged.bankExpiry={restored:'',credit:'',award:'',...merged.bankExpiry};
+ merged.holidayExempt=merged.holidayExempt&&typeof merged.holidayExempt==='object'&&!Array.isArray(merged.holidayExempt)?merged.holidayExempt:{};
+ merged.holidayNames=merged.holidayNames&&typeof merged.holidayNames==='object'&&!Array.isArray(merged.holidayNames)?merged.holidayNames:{};
+ merged.reconciliations=Array.isArray(merged.reconciliations)?merged.reconciliations:[];
+ merged.overtime=normalizeOT(merged.overtime);
+ return merged;
+}
+function localRead(key){
+ try{const item=localStorage.getItem(key);if(!item)return null;const parsed=JSON.parse(item);return snapshotValid(parsed)?parsed:null}
+ catch(e){console.warn('Unable to read saved leave data from '+key,e);return null}
+}
+function localAvailable(){
+ try{const key=KEY+'-test';localStorage.setItem(key,'ok');const ok=localStorage.getItem(key)==='ok';localStorage.removeItem(key);return ok}catch(e){return false}
+}
+function bestLocalSnapshot(){const candidates=[localRead(KEY),localRead(RECOVERY_KEY)].filter(Boolean);return candidates.sort((a,b)=>stateTimestamp(b)-stateTimestamp(a))[0]||null}
+function localWrite(snapshot){
+ try{
+  const raw=JSON.stringify(snapshot);
+  localStorage.setItem(RECOVERY_KEY,raw);
+  localStorage.setItem(KEY,raw);
+  return localStorage.getItem(KEY)===raw;
+ }catch(e){console.warn('Unable to save leave data locally',e);return false}
+}
+function openDatabase(){
+ if(dbPromise)return dbPromise;
+ dbPromise=new Promise(resolve=>{
+  if(!('indexedDB' in window)){resolve(null);return}
+  try{
+   const request=indexedDB.open(DB_NAME,1);
+   request.onupgradeneeded=()=>{const db=request.result;if(!db.objectStoreNames.contains(DB_STORE))db.createObjectStore(DB_STORE,{keyPath:'id'})};
+   request.onsuccess=()=>resolve(request.result);
+   request.onerror=()=>resolve(null);
+   request.onblocked=()=>resolve(null);
+  }catch(e){resolve(null)}
+ });
+ return dbPromise;
+}
+async function dbRead(){
+ const db=await openDatabase();if(!db)return null;
+ return new Promise(resolve=>{
+  try{const tx=db.transaction(DB_STORE,'readonly'),request=tx.objectStore(DB_STORE).get('current');
+   request.onsuccess=()=>resolve(snapshotValid(request.result?.data)?request.result.data:null);
+   request.onerror=()=>resolve(null);
+  }catch(e){resolve(null)}
+ });
+}
+async function dbWrite(snapshot){
+ const db=await openDatabase();if(!db)return false;
+ return new Promise(resolve=>{
+  try{
+   const tx=db.transaction(DB_STORE,'readwrite');
+   tx.objectStore(DB_STORE).put({id:'current',data:snapshot});
+   tx.oncomplete=()=>resolve(true);tx.onerror=()=>resolve(false);tx.onabort=()=>resolve(false);
+  }catch(e){resolve(false)}
+ });
+}
+function formatSavedTime(value){
+ const d=new Date(value);return Number.isNaN(d.valueOf())?'Unknown':d.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+}
+function storageStatus(){
+ const located=location.protocol==='file:'?'Local file (file://)':location.origin;
+ $('storageOrigin').textContent=located;
+ $('storageLastSaved').textContent=storageHealth.lastSaved?formatSavedTime(storageHealth.lastSaved):'No saved changes yet';
+ $('storageMethods').textContent=[storageHealth.local?'Browser storage':'',storageHealth.idb?'Recovery database':''].filter(Boolean).join(' + ')||'Not available';
+ let label,details,level;
+ if(storageHealth.hasData&&(storageHealth.local||storageHealth.idb)){
+  label='Saved locally';level='good';details='Your leave data is saved in this browser and will be loaded automatically when you reopen this website here.';
+  if(!storageHealth.local||!storageHealth.idb){level='warn';details='Your data is saved using '+(storageHealth.local?'browser storage':'the recovery database')+', but the other local save method is unavailable. Keep a JSON backup.'}
+  if(storageHealth.recovered){details='Your previous leave data was recovered automatically and restored. '+details;storageHealth.recovered=false}
+ }else if(storageHealth.blocked){label='Storage unavailable';level='bad';details='This browser is preventing local saves. Export a JSON backup before closing this page, and avoid private browsing.'}
+ else{label='No saved data yet';level='check';details='No previous leave data was found for this website. Import your last backup or enter balances, then click Save to create a local save.'}
+ if(location.protocol==='file:')details+=' You are opening a downloaded HTML file: for reliable reopening use the same GitHub Pages address.';
+ if(storageHealth.conflict)details+=' Another tab changed the stored data. Reload this page before editing to avoid overwriting it.';
+ $('storageBadge').textContent=label;
+ $('storageBadge').className='storage-badge '+level;
+ $('storageStatusText').textContent=details;
+ $('storageHeader').textContent=level==='good'?'◈ Saved on this browser':level==='bad'?'⚠ Not saved':level==='warn'?'⚠ Save with backup':storageHealth.hasData?'◈ Locally saved':'◈ No saved data yet';
+ $('savedLabel').textContent=storageHealth.hasData&&storageHealth.lastSaved?'Saved '+formatSavedTime(storageHealth.lastSaved):label;
+}
 function message(msg){const el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3800)}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(state));$('savedLabel').textContent='Saved on this device';return true}catch(e){message('Unable to save to browser storage. Use Export backup.');return false}}
+function save(){
+ changedSinceLoad=true;
+ state.__savedAt=new Date().toISOString();
+ const snapshot=JSON.parse(JSON.stringify(state));
+ const localOk=localWrite(snapshot);
+ storageHealth.local=localOk;
+ storageHealth.lastSaved=state.__savedAt;
+ storageHealth.hasData=localOk||storageHealth.idb;
+ storageHealth.blocked=!localOk&&!storageHealth.idb;
+ storageHealth.conflict=false;
+ storageStatus();
+ dbWriteQueue=dbWriteQueue.then(()=>dbWrite(snapshot)).then(ok=>{
+  storageHealth.idb=ok;
+  storageHealth.hasData=localOk||ok;
+  storageHealth.blocked=!localOk&&!ok;
+  storageStatus();
+  if(!localOk&&!ok)message('Auto-save failed. Download a JSON backup now.');
+ }).catch(()=>{storageHealth.idb=false;storageHealth.hasData=localOk;storageHealth.blocked=!localOk;storageStatus()});
+ return localOk;
+}
+// Maintain the existing key and automatically migrate prior v4.x saves.
+storageHealth.local=localAvailable();
+initialSnapshot=bestLocalSnapshot();
+if(initialSnapshot){state=normalizeState(initialSnapshot);storageHealth.hasData=true;storageHealth.lastSaved=state.__savedAt||''}
+async function initPersistence(){
+ try{
+  const remote=await dbRead();storageHealth.idb=!!(await openDatabase());
+  if(snapshotValid(remote)&&!changedSinceLoad&&(!initialSnapshot||stateTimestamp(remote)>stateTimestamp(initialSnapshot))){
+   state=normalizeState(remote);
+   storageHealth.hasData=true;
+   storageHealth.lastSaved=state.__savedAt||'';
+   storageHealth.recovered=true;
+   storageHealth.local=localWrite(state);
+   fillSettings();fillPattern();drawOverview();drawCalendar();drawActivity();drawReconciliations();drawPlanner();
+  }else if(initialSnapshot&&storageHealth.idb&&!remote){
+   // Seed the recovery database for existing v4.2 users at the same GitHub Pages origin.
+   const ok=await dbWrite(JSON.parse(JSON.stringify(state)));storageHealth.idb=ok;
+  }
+ }catch(e){console.warn('Could not open IndexedDB recovery copy',e);storageHealth.idb=false}
+ storageHealth.blocked=!storageHealth.local&&!storageHealth.idb;
+ storageStatus();
+}
 function section(name){document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id==='page-'+name));document.querySelectorAll('.nav button').forEach(x=>{const selected=x.dataset.page===name;x.classList.toggle('active',selected);x.setAttribute('aria-selected',String(selected))});if(name==='settings')fillSettings();if(name==='calendar')drawCalendar();if(name==='activity')drawActivity();if(name==='planner')drawPlanner();window.scrollTo({top:0,behavior:'smooth'})}
 function configured(){return state.annualBase!==''&&state.annualBase!==null&&Number.isFinite(+state.annualBase)&&!!state.rate&&validDate(state.asOf)&&validDate(state.start)&&validDate(state.end)}
 function periodDates(){if(!validDate(state.start)||!validDate(state.end)||state.start>state.end)return[];const list=[];for(let d=state.end,n=0;n<40&&d>=state.start;d=addDays(d,-14),n++)list.push(d);return list.reverse()}
@@ -321,8 +478,8 @@ function parseShift(s){
  if(sh===eh&&sm===em)return null;
  return m[1]+m[2]+'-'+m[3]+m[4];
 }
-const shiftValid=s=>parseShift(s)!==null;
-const cleanShift=s=>{const parsed=parseShift(s);return parsed===null?String(s??'').trim():parsed};
+function shiftValid(s){return parseShift(s)!==null}
+function cleanShift(s){const parsed=parseShift(s);return parsed===null?String(s??'').trim():parsed}
 // Old HH:MM-HH:MM schedules are converted to HHMM-HHMM, without losing shifts.
 function upgradeShiftStrings(data){
  if(Array.isArray(data.weekly))data.weekly=data.weekly.map(cleanShift);
@@ -385,8 +542,30 @@ $('lesApply').addEventListener('click',()=>{
  save();fillSettings();drawOverview();drawCalendar();drawReconciliations();message('LES balances imported.');section('overview');
 });
 function download(name,content,type){const url=URL.createObjectURL(new Blob([content],{type}));const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2500)}
-function backup(){const payload={app:'Leave Compass',version:'4.2',exportedAt:new Date().toISOString(),settings:{...state,entries:undefined},entries:state.entries};download('leave-compass-backup-'+today()+'.json',JSON.stringify(payload,null,2),'application/json');message('Backup exported.')}
+function backup(){const payload={app:'Leave Compass',version:'4.3',exportedAt:new Date().toISOString(),settings:{...state,entries:undefined},entries:state.entries};download('leave-compass-backup-'+today()+'.json',JSON.stringify(payload,null,2),'application/json');message('Backup exported.')}
 $('exportJson').addEventListener('click',backup);$('backupHeader').addEventListener('click',backup);$('importJson').addEventListener('click',()=>$('jsonFile').click());
+$('storageBackup').addEventListener('click',backup);
+$('checkStorage').addEventListener('click',async()=>{
+ const local=bestLocalSnapshot(),db=await dbRead();
+ storageHealth.local=localAvailable()&&!!local;
+ storageHealth.idb=!!db;
+ storageHealth.hasData=!!local||!!db;
+ storageHealth.blocked=!localAvailable()&&!storageHealth.idb;
+ const latest=[local,db].filter(Boolean).sort((a,b)=>stateTimestamp(b)-stateTimestamp(a))[0];
+ if(latest)storageHealth.lastSaved=latest.__savedAt||'';
+ storageStatus();message(storageHealth.hasData?'Saved data found for this website.':'No saved data found.');
+});
+$('keepStorage').addEventListener('click',async()=>{
+ if(!navigator.storage||typeof navigator.storage.persist!=='function'){
+  message('This browser does not offer a persistent-storage request. Please keep JSON backups.');return;
+ }
+ try{const granted=await navigator.storage.persist();message(granted?'Browser granted persistent storage. Keep a backup as well.':'Browser did not grant persistent storage. Local saving can still work; keep a backup.');}
+ catch(e){message('Browser cannot grant persistent storage here. Keep a backup.');}
+});
+window.addEventListener('storage',e=>{
+ if(e.key!==KEY&&e.key!==RECOVERY_KEY)return;
+ if(e.newValue){try{const data=JSON.parse(e.newValue);if(snapshotValid(data)&&stateTimestamp(data)>stateTimestamp(state)){storageHealth.conflict=true;storageStatus()}}catch(_){}}
+});
 $('jsonFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const raw=JSON.parse(await f.text()),data=raw.settings?{...raw.settings,entries:raw.entries}:raw;if(!data||!Array.isArray(data.entries)||data.entries.length>5000||!validDate(data.start)||!validDate(data.end)||!validDate(data.asOf)||!['4','6','8','custom',''].includes(String(data.rate)))throw Error('Backup format is invalid.');if(!confirm('Import this backup? It replaces the current leave data and shift schedule.'))return;upgradeShiftStrings(upgradeStored(data));state={...defaults(),...data,bankExpiry:{restored:'',credit:'',award:'',...data.bankExpiry},holidayExempt:data.holidayExempt&&typeof data.holidayExempt==='object'&&!Array.isArray(data.holidayExempt)?data.holidayExempt:{},holidayNames:data.holidayNames&&typeof data.holidayNames==='object'&&!Array.isArray(data.holidayNames)?data.holidayNames:{},reconciliations:Array.isArray(data.reconciliations)?data.reconciliations.slice(0,24):[],weekly:Array.isArray(data.weekly)&&data.weekly.length===7?data.weekly:defaultWeek(),cycle:Array.isArray(data.cycle)?data.cycle:[],shiftOverrides:data.shiftOverrides&&typeof data.shiftOverrides==='object'?data.shiftOverrides:{},overtime:normalizeOT(data.overtime),entries:data.entries.filter(x=>x&&typeof x==='object').map(x=>({id:String(x.id||'entry'+Math.random()),date:String(x.date||''),type:String(x.type||''),status:String(x.status||''),hours:Number(x.hours),note:String(x.note||'').slice(0,150)}))};save();fillSettings();fillPattern();drawOverview();drawActivity();drawCalendar();message('Backup restored.')}catch(err){message('Import error: '+err.message)}finally{e.target.value=''}});
 $('csvButton').addEventListener('click',()=>{const wrap=x=>'"'+String(x??'').replaceAll('"','""')+'"',rows=[['Date','Leave type','Entry type','Hours.Minutes (HH.MM)','Description'],...entries().sort((a,b)=>a.date.localeCompare(b.date)).map(e=>[e.date,e.type,e.status,leaveHM(e.hours),e.note])];download('leave-activity-'+today()+'.csv',rows.map(r=>r.map(wrap).join(',')).join('\r\n'),'text/csv');message('CSV exported.')});
 $('clearEntries').addEventListener('click',()=>{if(confirm('Delete all leave entries? Your balances and shifts will remain.')){state.entries=[];save();drawActivity();drawOverview();drawCalendar();message('Leave entries cleared.')}});
@@ -647,6 +826,7 @@ $('plannerRefresh').addEventListener('click',drawPlanner);
 $('plannerCalendar').addEventListener('click',()=>{planningMode=true;section('calendar');drawCalendar()});
 
 resetLeaveForm();fillSettings();fillPattern();drawOverview();drawCalendar();drawActivity();drawReconciliations();drawPlanner();
+storageStatus();initPersistence();
 })();
 
 </script>
